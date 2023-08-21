@@ -16,6 +16,8 @@ using IModel channel = connection.CreateModel();
 // Queue Build
 channel.QueueDeclare(queue: "example-queue", exclusive: false);
 
+//channel.QueueDeclare(queue: "example-queue", exclusive: false,durable: true); // Bu kısımda durable parametresi kuyruk için bir
+                                                                              // configurasyyon olup publish tarafında kuyruğu kalıcı hale getirmektedir 
 
 // Queue send the message
 
@@ -24,11 +26,17 @@ channel.QueueDeclare(queue: "example-queue", exclusive: false);
 //byte[] message = Encoding.UTF8.GetBytes("Merhaba");
 //channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message);
 
+//IBasicProperties properties = channel.CreateBasicProperties();
+//properties.Persistent = true; // Bu kısımda ise ilgili kuyruktaki mesajların kalıcı olarak sağlanması için bir konfigure yapılandırılmasıdır bu ve bir üst satır
+
 for (int i = 0; i < 100; i++)
 {
     await Task.Delay(200);
     byte[] message = Encoding.UTF8.GetBytes("Merhaba" + i);
     channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message);
+
+    //channel.BasicPublish(exchange: "", routingKey: "example-queue", body: message,basicProperties:properties);// Bu kısımda da publish edilen veride bu configure
+                                                                                                              // tarafına ait verinin kullanılması gerekmektedir 
 }
 
 Console.Read();
